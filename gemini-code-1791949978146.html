@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Seat</title>
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .font-sans { font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body class="bg-stone-50 font-sans text-stone-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Header / Welcome Section -->
+    <header class="text-center py-12 px-4 bg-white border-b border-stone-200 shadow-xs">
+        <h1 class="font-serif text-3xl md:text-4xl text-amber-800 tracking-wide mb-2">Welcome to Our Wedding</h1>
+        <p class="text-stone-500 font-light italic text-sm tracking-widest uppercase">Emma & Alexander • October 14, 2026</p>
+    </header>
+
+    <!-- Main Content App Interface -->
+    <main class="max-w-md w-full mx-auto px-6 py-8 flex-grow">
+        <div class="bg-white rounded-2xl shadow-xl p-6 border border-stone-100">
+            <h2 class="font-serif text-xl text-center text-stone-700 mb-6">Please Find Your Seat</h2>
+            
+            <!-- Search Inputs -->
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label for="search-input" class="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">Enter Your Name</label>
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        placeholder="e.g., John Smith or Jane" 
+                        class="w-full px-4 py-3 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-600/30 focus:border-amber-700 transition duration-200 text-stone-700 placeholder-stone-400"
+                    >
+                </div>
+            </div>
+
+            <!-- Results Display Area -->
+            <div id="results-container" class="hidden space-y-3 max-h-64 overflow-y-auto pr-1">
+                <!-- Dynamic cards will inject here -->
+            </div>
+
+            <!-- Empty State / Instructions -->
+            <div id="instruction-state" class="text-center py-8 text-stone-400 text-sm">
+                <p>Type your first or last name above to discover your table assignment.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-stone-400 text-xs tracking-wider">
+        Thank you for celebrating with us!
+    </footer>
+
+    <!-- Application Logic -->
+    <script>
+        // 1. YOUR GUEST LIST DATA
+        const guestDatabase = [
+            { name: "John Smith", table: "Table 1", description: "Near the dance floor" },
+            { name: "Jane Doe", table: "Table 1", description: "Near the dance floor" },
+            { name: "Michael Johnson", table: "Table 2", description: "Family seating" },
+            { name: "Emily Davis", table: "Table 3", description: "Garden view side" },
+            { name: "Robert Miller", table: "Table 2", description: "Family seating" },
+            { name: "Sophia Wilson", table: "Table 4", description: "Head Table" },
+            { name: "David Taylor", table: "Table 3", description: "Garden view side" }
+        ];
+
+        // 2. DOM Elements
+        const searchInput = document.getElementById('search-input');
+        const resultsContainer = document.getElementById('results-container');
+        const instructionState = document.getElementById('instruction-state');
+
+        // 3. Search Algorithm
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+
+            if (query.length < 2) {
+                resultsContainer.classList.add('hidden');
+                instructionState.classList.remove('hidden');
+                instructionState.innerHTML = `<p>Type your first or last name above to discover your table assignment.</p>`;
+                return;
+            }
+
+            // Filter database matching search string
+            const matches = guestDatabase.filter(guest => 
+                guest.name.toLowerCase().includes(query)
+            );
+
+            // Display Results
+            if (matches.length > 0) {
+                instructionState.classList.add('hidden');
+                resultsContainer.classList.remove('hidden');
+                
+                resultsContainer.innerHTML = matches.map(guest => `
+                    <div class="flex items-center justify-between p-4 bg-amber-50/50 border border-amber-100 rounded-xl">
+                        <div>
+                            <p class="font-medium text-stone-800">${guest.name}</p>
+                            <p class="text-xs text-stone-400 font-light mt-0.5">${guest.description}</p>
+                        </div>
+                        <div class="bg-amber-800 text-white font-serif px-4 py-2 rounded-lg font-semibold text-sm shadow-xs tracking-wide">
+                            ${guest.table}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                resultsContainer.classList.add('hidden');
+                instructionState.classList.remove('hidden');
+                instructionState.innerHTML = `
+                    <p class="text-red-500 font-medium">No seating assignment found.</p>
+                    <p class="text-xs text-stone-400 mt-1">Please check your spelling or contact a coordinator.</p>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
